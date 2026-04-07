@@ -47,6 +47,15 @@ align-items:center;
 justify-content:center;
 flex-direction:column;
 }
+
+#rankingBox{
+background:white;
+padding:15px;
+border-radius:10px;
+margin:20px auto;
+width:300px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
 </style>
 </head>
 
@@ -69,6 +78,11 @@ flex-direction:column;
 <div id="resultado"></div>
 <div id="pontuacao">Pontuação: 0</div>
 
+<div id="rankingBox">
+<h3>🏆 Ranking Global</h3>
+<ol id="ranking"></ol>
+</div>
+
 <div id="vitoria">
 <h1>🎉 Vitória! 🎉</h1>
 <h2 id="pontuacaoFinal"></h2>
@@ -79,7 +93,23 @@ flex-direction:column;
 <audio id="somErro" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c1f8c33b5.mp3"></audio>
 <audio id="somVitoria" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3e0c4d9f6a.mp3"></audio>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 <script>
+const firebaseConfig = {
+apiKey: "SUA_KEY",
+authDomain: "SEU_PROJETO.firebaseapp.com",
+databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+projectId: "SEU_PROJETO",
+storageBucket: "SEU_PROJETO.appspot.com",
+messagingSenderId: "XXXX",
+appId: "XXXX"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 const seres = [
 {nome:"Capim", emoji:"🌱", tipo:"Produtor", nivel:"1º nível - Produtor"},
@@ -135,6 +165,8 @@ document.getElementById("vitoria").style.display = "flex";
 document.getElementById("pontuacaoFinal").textContent =
 "Pontuação: " + pontos;
 document.getElementById("somVitoria").play();
+
+salvarPontuacao();
 }
 
 setTimeout(novo, 1500);
@@ -147,7 +179,40 @@ document.getElementById("pontuacao").textContent = "Pontuação: 0";
 novo();
 }
 
+function salvarPontuacao(){
+const nome = document.getElementById("nomeJogador").value || "Jogador";
+
+db.ref("ranking").push({
+nome: nome,
+pontos: pontos
+});
+}
+
+function carregarRanking(){
+db.ref("ranking").on("value", snapshot => {
+const dados = snapshot.val();
+const lista = document.getElementById("ranking");
+lista.innerHTML = "";
+
+if(!dados) return;
+
+const array = Object.values(dados);
+array.sort((a,b)=> b.pontos - a.pontos);
+
+array.slice(0,10).forEach((item,index)=>{
+let medalha = "";
+
+if(index==0) medalha="🥇";
+else if(index==1) medalha="🥈";
+else if(index==2) medalha="🥉";
+
+lista.innerHTML += `<li>${medalha} ${item.nome} - ${item.pontos}</li>`;
+});
+});
+}
+
 novo();
+carregarRanking();
 
 </script>
 
