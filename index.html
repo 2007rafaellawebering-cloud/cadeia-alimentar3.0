@@ -71,9 +71,9 @@ box-shadow:0 0 10px rgba(0,0,0,0.2);
 <div id="nivelTrofico"></div>
 </div>
 
-<button class="produtor" onclick="responder('Produtor')">Produtor</button>
-<button class="consumidor" onclick="responder('Consumidor')">Consumidor</button>
-<button class="decompositor" onclick="responder('Decompositor')">Decompositor</button>
+<button class="produtor" onclick="responder('Produtor')">🌿 Produtor</button>
+<button class="consumidor" onclick="responder('Consumidor')">🐾 Consumidor</button>
+<button class="decompositor" onclick="responder('Decompositor')">🍄 Decompositor</button>
 
 <div id="resultado"></div>
 <div id="pontuacao">Pontuação: 0</div>
@@ -131,11 +131,27 @@ const seres = [
 {nome:"Minhoca", emoji:"🪱", tipo:"Decompositor", nivel:"Decompositor"}
 ];
 
+let listaEmbaralhada = [];
+let indice = 0;
 let atual;
 let pontos = 0;
 
+function embaralhar(array){
+for(let i = array.length -1; i>0; i--){
+const j = Math.floor(Math.random() * (i+1));
+[array[i], array[j]] = [array[j], array[i]];
+}
+return array;
+}
+
 function novo(){
-atual = seres[Math.floor(Math.random()*seres.length)];
+if(indice >= listaEmbaralhada.length){
+listaEmbaralhada = embaralhar([...seres]);
+indice = 0;
+}
+
+atual = listaEmbaralhada[indice];
+indice++;
 
 document.getElementById("serVivo").textContent = atual.nome;
 document.getElementById("emoji").textContent = atual.emoji;
@@ -145,7 +161,6 @@ document.getElementById("resultado").textContent = "";
 }
 
 function responder(escolha){
-
 if(escolha === atual.tipo){
 document.getElementById("resultado").textContent = "✅ Acertou!";
 document.getElementById("somAcerto").play();
@@ -156,16 +171,12 @@ document.getElementById("somErro").play();
 }
 
 document.getElementById("nivelTrofico").textContent = atual.nivel;
-
-document.getElementById("pontuacao").textContent =
-"Pontuação: " + pontos;
+document.getElementById("pontuacao").textContent = "Pontuação: " + pontos;
 
 if(pontos >= 10){
 document.getElementById("vitoria").style.display = "flex";
-document.getElementById("pontuacaoFinal").textContent =
-"Pontuação: " + pontos;
+document.getElementById("pontuacaoFinal").textContent = "Pontuação: " + pontos;
 document.getElementById("somVitoria").play();
-
 salvarPontuacao();
 }
 
@@ -176,12 +187,13 @@ function reiniciar(){
 pontos = 0;
 document.getElementById("vitoria").style.display = "none";
 document.getElementById("pontuacao").textContent = "Pontuação: 0";
+listaEmbaralhada = embaralhar([...seres]);
+indice = 0;
 novo();
 }
 
 function salvarPontuacao(){
 const nome = document.getElementById("nomeJogador").value || "Jogador";
-
 db.ref("ranking").push({
 nome: nome,
 pontos: pontos
@@ -201,7 +213,6 @@ array.sort((a,b)=> b.pontos - a.pontos);
 
 array.slice(0,10).forEach((item,index)=>{
 let medalha = "";
-
 if(index==0) medalha="🥇";
 else if(index==1) medalha="🥈";
 else if(index==2) medalha="🥉";
@@ -211,9 +222,9 @@ lista.innerHTML += `<li>${medalha} ${item.nome} - ${item.pontos}</li>`;
 });
 }
 
+listaEmbaralhada = embaralhar([...seres]);
 novo();
 carregarRanking();
-
 </script>
 
 </body>
