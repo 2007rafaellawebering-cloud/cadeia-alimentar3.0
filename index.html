@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Jogo da Cadeia Alimentar</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #e8f5e9;
+}
+
+img{
+  width:200px;
+  height:200px;
+  object-fit:cover;
+  border-radius:15px;
+  margin:10px;
+}
+
+button{
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+input{
+  padding:8px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+.produtor{ background:#66bb6a; color:white;}
+.consumidor{ background:#42a5f5; color:white;}
+.decompositor{ background:#8d6e63; color:white;}
+
+#nivelTrofico{
+  font-weight:bold;
+  margin-top:5px;
+  color:#2e7d32;
+}
+
+#vitoria{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.8);
+  color:white;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🌿 Cadeia Alimentar</h1>
+
+<input id="nomeJogador" placeholder="Digite seu nome">
+
+<div>
+<img id="imagem">
+<h2 id="serVivo"></h2>
+<div id="nivelTrofico"></div>
+</div>
+
+<button class="produtor" onclick="responder('Produtor')">Produtor</button>
+<button class="consumidor" onclick="responder('Consumidor')">Consumidor</button>
+<button class="decompositor" onclick="responder('Decompositor')">Decompositor</button>
+
+<div id="resultado"></div>
+<div id="pontuacao">Pontuação: 0</div>
+
+<div id="vitoria">
+  <h1>🎉 Você venceu! 🎉</h1>
+  <h2 id="pontuacaoFinal"></h2>
+  <button onclick="reiniciar()">Jogar novamente</button>
+</div>
+
+<script>
+
+const seres = [
+{nome:"Capim", tipo:"Produtor", nivel:"1º nível - Produtor", img:"https://upload.wikimedia.org/wikipedia/commons/6/6f/Grass.jpg"},
+{nome:"Árvore", tipo:"Produtor", nivel:"1º nível - Produtor", img:"https://upload.wikimedia.org/wikipedia/commons/3/3f/Tree.jpg"},
+{nome:"Algas", tipo:"Produtor", nivel:"1º nível - Produtor", img:"https://upload.wikimedia.org/wikipedia/commons/4/4c/Seaweed.jpg"},
+
+{nome:"Coelho", tipo:"Consumidor", nivel:"2º nível - Consumidor Primário", img:"https://upload.wikimedia.org/wikipedia/commons/7/70/Rabbit.jpg"},
+{nome:"Vaca", tipo:"Consumidor", nivel:"2º nível - Consumidor Primário", img:"https://upload.wikimedia.org/wikipedia/commons/3/3d/Cow_female_black_white.jpg"},
+{nome:"Gafanhoto", tipo:"Consumidor", nivel:"2º nível - Consumidor Primário", img:"https://upload.wikimedia.org/wikipedia/commons/5/5f/Grasshopper.jpg"},
+
+{nome:"Cobra", tipo:"Consumidor", nivel:"3º nível - Consumidor Secundário", img:"https://upload.wikimedia.org/wikipedia/commons/3/3e/Snake.jpg"},
+{nome:"Sapo", tipo:"Consumidor", nivel:"3º nível - Consumidor Secundário", img:"https://upload.wikimedia.org/wikipedia/commons/6/6c/Frog.jpg"},
+
+{nome:"Águia", tipo:"Consumidor", nivel:"4º nível - Consumidor Terciário", img:"https://upload.wikimedia.org/wikipedia/commons/1/19/Golden_Eagle.jpg"},
+{nome:"Leão", tipo:"Consumidor", nivel:"4º nível - Consumidor Terciário", img:"https://upload.wikimedia.org/wikipedia/commons/7/73/Lion_waiting_in_Namibia.jpg"},
+
+{nome:"Cogumelo", tipo:"Decompositor", nivel:"Decompositor", img:"https://upload.wikimedia.org/wikipedia/commons/3/3e/Amanita_muscaria.jpg"},
+{nome:"Bactéria", tipo:"Decompositor", nivel:"Decompositor", img:"https://upload.wikimedia.org/wikipedia/commons/8/8c/EscherichiaColi_NIAID.jpg"},
+{nome:"Minhoca", tipo:"Decompositor", nivel:"Decompositor", img:"https://upload.wikimedia.org/wikipedia/commons/8/8a/Earthworm.jpg"}
+];
+
+let atual;
+let pontos = 0;
+
+function novo(){
+atual = seres[Math.floor(Math.random()*seres.length)];
+
+document.getElementById("serVivo").textContent = atual.nome;
+document.getElementById("imagem").src = atual.img;
+document.getElementById("nivelTrofico").textContent = "";
+document.getElementById("resultado").textContent = "";
+}
+
+function responder(escolha){
+if(escolha === atual.tipo){
+document.getElementById("resultado").textContent = "✅ Acertou!";
+document.getElementById("nivelTrofico").textContent = atual.nivel;
+pontos++;
+}else{
+document.getElementById("resultado").textContent =
+"❌ Errou!";
+document.getElementById("nivelTrofico").textContent = atual.nivel;
+}
+
+document.getElementById("pontuacao").textContent =
+"Pontuação: " + pontos;
+
+if(pontos >= 15){
+document.getElementById("vitoria").style.display = "flex";
+document.getElementById("pontuacaoFinal").textContent =
+"Pontuação: " + pontos;
+}
+
+setTimeout(novo, 1500);
+}
+
+function reiniciar(){
+pontos = 0;
+document.getElementById("vitoria").style.display = "none";
+document.getElementById("pontuacao").textContent = "Pontuação: 0";
+novo();
+}
+
+novo();
+
+</script>
+
+</body>
+</html>
